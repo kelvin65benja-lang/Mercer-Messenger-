@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<meta name="theme-color" content="#07111f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#07111f">
+<!-- OneSignal Web SDK — https://documentation.onesignal.com/docs/web-sdk-setup -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<title>Mercer Messenger v10.5.6</title>
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+<body>
+<div id="netBanner"><span class="dotpulse"></span><span id="netBannerText">You're offline — connect to the internet to send or receive messages</span><button id="netRetryBtn" class="net-retry-btn hidden" onclick="manualRetryConnection()">Retry</button></div>
+<div id="bootGate" class="boot-gate hidden"></div>
+<section id="auth">
+ <div class="auth-card">
+  <div class="logo"><div class="logo-mark">M</div><h1>Mercer Messenger</h1><p>Private messaging with your phone number</p></div>
+  <div id="phoneStep" class="form">
+   <p class="hint">Enter your phone number. Mercer Messenger will send an SMS verification code. Use your full active number.</p>
+   <div class="phone-row">
+    <select id="countryCode" class="input"><option value="+254">🇰🇪 +254</option><option value="+255">🇹🇿 +255</option><option value="+256">🇺🇬 +256</option><option value="+250">🇷🇼 +250</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option></select>
+    <input id="phoneInput" class="input" type="tel" inputmode="tel" placeholder="712 345 678" autocomplete="tel">
+   </div>
+   <div id="phoneError" class="error"></div>
+   <button id="sendCodeBtn" class="primary" type="button">Continue</button>
+   <div id="recaptcha-container"></div>
+  </div>
+  <div id="otpStep" class="form hidden">
+   <p class="hint">We sent a 6-digit code to <b id="otpPhone"></b>.</p>
+   <input id="otpInput" class="input" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+   <div id="otpError" class="error"></div>
+   <button id="verifyCodeBtn" class="primary" type="button">Verify & continue</button>
+   <button class="text-btn" onclick="backToPhone()">Change phone number</button>
+  </div>
+  <div id="profileStep" class="form hidden">
+   <div class="photo-upload"><div id="profilePreview" class="photo-preview">M</div><div style="flex:1"><b>Profile picture</b><div class="hint">Optional</div></div><input id="profilePhoto" type="file" accept="image/*" hidden onchange="previewProfilePhoto(event)"><button class="secondary" onclick="profilePhoto.click()">Add</button></div>
+   <input id="profileName" class="input" placeholder="Your name" maxlength="50">
+   <textarea id="profileAbout" class="input" rows="3" maxlength="140" placeholder="About">Hey there! I am using Mercer Messenger.</textarea>
+   <div id="profileError" class="error"></div>
+   <button class="primary" onclick="saveFirstProfile()">Start messaging</button>
+  </div>
+ </div>
+</section>
+<section id="app" class="hidden">
+ <aside class="sidebar">
+  <div class="sidebar-top"><div class="my-profile"><div id="myAvatar"></div><div class="my-profile-info"><strong id="myName"></strong><span id="myPhone"></span></div><button class="icon-btn" title="New chat" onclick="openNewChat()">＋</button><button class="icon-btn" title="Settings" onclick="openSettings()">⚙</button></div><div class="search"><span>⌕</span><input id="globalSearch" class="input" placeholder="Search chats" oninput="renderSidebar()"></div></div>
+  <div class="tabs"><button id="tabChats" class="tab active" onclick="switchTab('chats')">Chats</button><button id="tabPeople" class="tab" onclick="switchTab('people')">People</button><button id="tabStatus" class="tab" onclick="switchTab('status')">Status</button></div>
+  <div id="sideList" class="side-list"></div>
+ </aside>
+ <main class="chat">
+  <header class="chat-header"><button class="icon-btn mobile-back" onclick="closeMobileChat()">‹</button><div id="chatAvatar"></div><div class="chat-user-info"><strong id="chatName">Mercer Messenger</strong><small id="chatStatus">Select a chat to start</small></div><div class="connection"><i id="connDot" class="dot"></i><span id="connText">Secure</span></div><button id="audioBtn" class="icon-btn hidden" onclick="startAudioCall()">☎</button><button id="videoBtn" class="icon-btn hidden" onclick="startVideoCall()">▣</button><button id="chatInfoBtn" class="icon-btn hidden" onclick="openChatInfo()">⋮</button></header>
+  <div id="chatBody" class="chat-body"><div class="home-dashboard"><div class="home-hero"><div class="hero-badge">✦ MERCER MESSENGER</div><h1>Everything you need to stay connected.</h1><p>Private conversations, instant media sharing, voice notes and voice/video calls — in one beautiful workspace.</p><div class="home-actions"><button class="primary" onclick="openNewChat()">＋ Start a chat</button><button class="secondary" onclick="switchTab('people')">👥 View people</button></div></div><div class="quick-grid"><button class="quick-card" onclick="openNewChat()"><span>💬</span><b>New message</b><small>Start a conversation</small></button><button class="quick-card" onclick="switchTab('status')"><span>◉</span><b>Post a status</b><small>Share an update</small></button><button class="quick-card" onclick="openSettings()"><span>⚙</span><b>Customize</b><small>Make Mercer yours</small></button><button class="quick-card" onclick="requestNotifications()"><span>🔔</span><b>Notifications</b><small>Never miss a message</small></button></div><div class="home-stats"><div><strong id="homeChatCount">0</strong><span>Chats</span></div><div><strong id="homePeopleCount">0</strong><span>People</span></div><div><strong>1:1</strong><span>Calls</span></div><div><strong>∞</strong><span>Messages</span></div></div><div class="home-note"><span>🔐</span><div><b>Built for real conversations</b><p>Your messages and calls are designed around direct connections. Keep your account protected with strong Firebase rules.</p></div></div></div></div>
+  <div id="typing" class="typing"></div>
+  <div id="replyBar" class="reply hidden"><div><strong>Reply</strong><span id="replyText"></span></div><button class="icon-btn" onclick="cancelReply()">×</button></div>
+  <div id="composer" class="composer hidden"><button class="icon-btn" onclick="fileInput.click()">＋</button><input id="fileInput" type="file" hidden multiple onchange="handleFiles(event)"><button id="recordBtn" class="icon-btn" onclick="toggleRecording()">🎙</button><textarea id="messageInput" class="input" rows="1" placeholder="Write a message..." oninput="handleTyping()" onkeydown="messageKeydown(event)"></textarea><button class="icon-btn" onclick="sendText()">➤</button></div>
+ </main>
+</section>
+<div id="drawer" class="drawer"><div class="drawer-head"><strong id="drawerTitle">Settings</strong><button class="icon-btn" onclick="closeDrawer()">×</button></div><div id="drawerBody" class="drawer-body"></div></div>
+<div id="modal" class="modal" onclick="outsideModal(event)"><div id="modalCard" class="modal-card"></div></div>
+<div id="callScreen" class="call-screen"><video id="remoteVideo" autoplay playsinline></video><audio id="remoteAudio" autoplay></audio><video id="localVideo" class="local-video" autoplay muted playsinline></video><div class="call-info"><strong id="callName">Mercer User</strong><div id="callState">Connecting…</div></div><div class="call-controls"><button class="call-control" aria-label="Mute microphone" title="Mute microphone" onclick="toggleMute()">🎙</button><button class="call-control" aria-label="Toggle camera" title="Toggle camera" onclick="toggleCamera()">▣</button><button class="call-control end" aria-label="End call" title="End call" onclick="endCall()">☎</button></div></div>
+<div id="toast"></div>
+  <script src="./assets/js/app.js"></script>
+</body>
+</html>

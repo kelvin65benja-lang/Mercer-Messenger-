@@ -1,0 +1,21 @@
+{
+  "name": "Mercer Messenger",
+  "short_name": "Mercer",
+  "description": "Private messaging with your phone number",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050b14",
+  "theme_color": "#07111f",
+  "lang": "en",
+  "version": "10.5.6",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
