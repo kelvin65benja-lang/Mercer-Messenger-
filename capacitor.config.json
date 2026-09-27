@@ -1,6 +1,6 @@
 {
   "appId": "com.mercer.messenger",
   "appName": "Mercer Messenger",
-  "webDir": ".",
+  "webDir": "www",
   "bundledWebRuntime": false
 }
